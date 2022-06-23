@@ -2,15 +2,33 @@ import {useState} from "react";
 import { SafeAreaView, StyleSheet, TextInput, Text, TouchableOpacity } from "react-native";
 
 const sendText= async (phoneNumber) => {
-
-  // using fetch to do a POST to https://dev.stedi.me/twofactorlogin/541-232-8499
-  await fetch('https://dev.stedi.me/twofactorlogin/'+phoneNumber,{
+  console.log("PhoneNumber: ", phoneNumber);
+  const loginResponse=await fetch('https://dev.stedi.me/twofactorlogin/'+phoneNumber,{
     method: 'POST',
     headers: {
-      'Content-Type': 'application/Text'
+      'content-type': 'application/text'
     }
   });
-  console.log("PhoneNumber: ",phoneNumber);
+  const loginResponseText = await loginResponse.text();
+  console.log('Login Response',loginResponseText);
+
+};
+
+const getToken = async ({phoneNumber,oneTimePassword}) => {
+  console.log("PhoneNumber: ", phoneNumber);
+  const loginResponse=await fetch('https://dev.stedi.me/twofactorlogin/',{
+    method: 'POST',
+    headers: {
+      'content-type': 'application/text'
+    },
+    body:{
+      phoneNumber,
+      oneTimePassword
+    }
+  });
+  const token = await loginResponse.text();
+  console.log(token);
+
 };
 
 const Login = () => {
