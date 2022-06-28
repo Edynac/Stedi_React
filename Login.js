@@ -1,37 +1,38 @@
 import {useState} from "react";
 import { SafeAreaView, StyleSheet, TextInput, Text, TouchableOpacity } from "react-native";
+import { clickProps } from "react-native-web/dist/cjs/modules/forwardedProps";
 
 const sendText= async (phoneNumber) => {
   console.log("PhoneNumber: ", phoneNumber);
-  const loginResponse=await fetch('https://dev.stedi.me/twofactorlogin/'+phoneNumber,{
+  await fetch('https://dev.stedi.me/twofactorlogin/'+phoneNumber,{
     method: 'POST',
     headers: {
       'content-type': 'application/text'
     }
   });
-  const loginResponseText = await loginResponse.text();
-  console.log('Login Response',loginResponseText);
+
 
 };
 
-const getToken = async ({phoneNumber,oneTimePassword}) => {
-  console.log("PhoneNumber: ", phoneNumber);
-  const loginResponse=await fetch('https://dev.stedi.me/twofactorlogin/',{
+const getToken = async ({phoneNumber, oneTimePassword, setUserLoggedIn}) => {
+  const tokenResponse=await fetch('https://dev.stedi.me/twofactorlogin',{
     method: 'POST',
+    body:JSON.stringify({oneTimePassword, phoneNumber}),
     headers: {
-      'content-type': 'application/text'
-    },
-    body:{
-      phoneNumber,
-      oneTimePassword
+      'content-type': 'application/json'
     }
   });
-  const token = await loginResponse.text();
-  console.log(token);
 
+  const responceCode = await tokenResponse.status;//200 means logged in successfully
+  console.log("Response Status Code", responceCode);
+  if(responceCode==200){
+    setUserLoggedIn(true);
+  }
+  const tokenResponseString = await tokenResponse.text;
+  console.log('Token Response String', tokenResponseString)
 };
 
-const Login = () => {
+const Login = (props) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [oneTimePassword, setOneTimePassword] = useState(null);
 
@@ -61,7 +62,9 @@ const Login = () => {
       />
       <TouchableOpacity
       style={styles.button}
-      onPress={()=>{console.log('Login button was clicked')}}
+      onPress={()=>{
+        getToken({phoneNumber, oneTimePassword, setUserLoggedIn:props.setUserLoggedIn})
+      }}
       >
         <Text>Login</Text>
       </TouchableOpacity>
