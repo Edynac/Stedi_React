@@ -14,31 +14,32 @@ const sendText= async (phoneNumber) => {
 
 };
 
-const getToken = async ({phoneNumber, oneTimePassword, setUserLoggedIn}) => {
-  const tokenResponse=await fetch('https://dev.stedi.me/twofactorlogin',{
-    method: 'POST',
-    body:JSON.stringify({oneTimePassword, phoneNumber}),
-    headers: {
-      'content-type': 'application/json'
-    }
-  });
-
-  const responceCode = await tokenResponse.status;//200 means logged in successfully
-  console.log("Response Status Code", responceCode);
-  if(responceCode==500){
-    setUserLoggedIn(true);
-    const tokenResponseString = await tokenResponse.text;
-    console.log('Token Response String', tokenResponseString)
-    const emailResponce = await fetch("https://dev.stedi.me/validate/"+userToken);
-    const textEmail = await emailResponce.text();
-    setUserEmail(textEmail);
-  }
-
-};
-
 const Login = (props) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [oneTimePassword, setOneTimePassword] = useState(null);
+
+  const getToken = async ({phoneNumber, oneTimePassword, setUserLoggedIn}) => {
+    const tokenResponse=await fetch('https://dev.stedi.me/twofactorlogin',{
+      method: 'POST',
+      body:JSON.stringify({oneTimePassword, phoneNumber}),
+      headers: {
+        'content-type': 'application/json'
+      }
+    });
+  
+    const responceCode = tokenResponse.status;//200 means logged in successfully
+    console.log("Response Status Code", responceCode);
+    if(responceCode==200){
+      const token = await tokenResponse.text();
+      console.log(token)
+      const emailResponce = await fetch("https://dev.stedi.me/validate/"+token);
+      const textEmail = await emailResponce.text();
+      console.log("textEmail:"+textEmail);
+      props.setUserEmail(textEmail);
+      setUserLoggedIn(true);
+    }
+  
+  };
 
   return (
     <SafeAreaView style={styles.mainView}>

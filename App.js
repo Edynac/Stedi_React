@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
 import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Counter from './Counter.js';
@@ -26,7 +26,7 @@ export default function App() {
       >
         <Tab.Screen
           name='Home'
-          component={Home}
+          children={()=><Home loggedInUser={userEmail}/>}
           options={{
             userEmail: {userEmail},
             tabBarLabel: 'Home',
