@@ -10,7 +10,7 @@ function Bar(props) {
     return(
         <View style={styles.bar}>
             <AppName />
-            <Text>{props.userEmail}</Text>
+            <Text>Logged In User: {"\n"}{props.userEmail}</Text>
         </View>
     )
   }
